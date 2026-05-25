@@ -34,7 +34,6 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // размер холста под окно
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -43,44 +42,41 @@
         window.addEventListener('resize', resize);
         resize();
 
-        let currentView = "office"; // office, left, right
+        let view = "office"; // office, left, right
 
         function draw() {
-            // Офис — серый
-            if(currentView === "office") {
-                ctx.fillStyle = "#555";
+            if(view === "office") {
+                ctx.fillStyle = "#444";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "white";
-                ctx.font = "24px monospace";
-                ctx.fillText("OFFICE", canvas.width/2-50, canvas.height/2);
+                ctx.font = "30px monospace";
+                ctx.fillText("OFFICE", canvas.width/2 - 50, canvas.height/2);
             }
-            // Левый поворот — зелёный
-            else if(currentView === "left") {
+            else if(view === "left") {
                 ctx.fillStyle = "green";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "white";
-                ctx.font = "24px monospace";
-                ctx.fillText("LEFT", canvas.width/2-40, canvas.height/2);
+                ctx.font = "30px monospace";
+                ctx.fillText("LEFT", canvas.width/2 - 30, canvas.height/2);
             }
-            // Правый поворот — синий
-            else if(currentView === "right") {
+            else if(view === "right") {
                 ctx.fillStyle = "blue";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "white";
-                ctx.font = "24px monospace";
-                ctx.fillText("RIGHT", canvas.width/2-40, canvas.height/2);
+                ctx.font = "30px monospace";
+                ctx.fillText("RIGHT", canvas.width/2 - 30, canvas.height/2);
             }
         }
 
         function turnLeft() {
-            if(currentView === "office") currentView = "left";
-            else if(currentView === "right") currentView = "office";
+            if(view === "office") view = "left";
+            else if(view === "right") view = "office";
             draw();
         }
 
         function turnRight() {
-            if(currentView === "office") currentView = "right";
-            else if(currentView === "left") currentView = "office";
+            if(view === "office") view = "right";
+            else if(view === "left") view = "office";
             draw();
         }
 
