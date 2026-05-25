@@ -43,76 +43,35 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // картинки
-        const images = {
-            office: new Image(),
-            left: new Image(),
-            right: new Image()
-        };
-
-        images.office.src = "office.jpg";
-        images.left.src = "left.jpg";
-        images.right.src = "right.jpg";
-
         let currentView = "office"; // office, left, right
-        let loadedCount = 0;
-        let loadError = false;
-        let errorMessage = "";
-
-        function checkLoad() {
-            loadedCount++;
-            if(loadedCount === 3) draw();
-        }
-
-        function handleError(imgName) {
-            loadError = true;
-            errorMessage = `Не загрузилось: ${imgName}.jpg`;
-            draw();
-        }
-
-        images.office.onload = checkLoad;
-        images.left.onload = checkLoad;
-        images.right.onload = checkLoad;
-
-        images.office.onerror = () => handleError("office");
-        images.left.onerror = () => handleError("left");
-        images.right.onerror = () => handleError("right");
 
         function draw() {
-            // Ошибка загрузки
-            if(loadError) {
-                ctx.fillStyle = "#111";
+            // Офис — серый
+            if(currentView === "office") {
+                ctx.fillStyle = "#555";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "red";
-                ctx.font = "18px monospace";
-                ctx.fillText("ОШИБКА", 50, 100);
                 ctx.fillStyle = "white";
-                ctx.font = "14px monospace";
-                ctx.fillText(errorMessage, 50, 150);
-                ctx.fillText("Файлы должны быть в одной папке с index.html", 50, 200);
-                ctx.fillText("Имена: office.jpg , left.jpg , right.jpg", 50, 250);
-                return;
+                ctx.font = "24px monospace";
+                ctx.fillText("OFFICE", canvas.width/2-50, canvas.height/2);
             }
-
-            // Загрузка
-            if(loadedCount < 3) {
-                ctx.fillStyle = "#111";
+            // Левый поворот — зелёный
+            else if(currentView === "left") {
+                ctx.fillStyle = "green";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#aaa";
-                ctx.font = "16px monospace";
-                ctx.fillText("Загрузка...", 30, 80);
-                return;
+                ctx.fillStyle = "white";
+                ctx.font = "24px monospace";
+                ctx.fillText("LEFT", canvas.width/2-40, canvas.height/2);
             }
-
-            // Нормальный режим: рисуем картинку
-            let img = images.office;
-            if(currentView === "left") img = images.left;
-            if(currentView === "right") img = images.right;
-            
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            // Правый поворот — синий
+            else if(currentView === "right") {
+                ctx.fillStyle = "blue";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "white";
+                ctx.font = "24px monospace";
+                ctx.fillText("RIGHT", canvas.width/2-40, canvas.height/2);
+            }
         }
 
-        // управление
         function turnLeft() {
             if(currentView === "office") currentView = "left";
             else if(currentView === "right") currentView = "office";
