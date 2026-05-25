@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Office</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        body {
+            background: black;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    (function(){
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const office = new Image();
+        const left = new Image();
+        const right = new Image();
+
+        office.src = "office.jpg";
+        left.src = "left.jpg";
+        right.src = "right.jpg";
+
+        let view = "office";
+        let imagesLoaded = 0;
+        let loadError = false;
+
+        function checkLoad() {
+            imagesLoaded++;
+            if(imagesLoaded === 3) draw();
+        }
+
+        function errorHandler() {
+            loadError = true;
+            draw();
+        }
+
+        office.onload = checkLoad;
+        left.onload = checkLoad;
+        right.onload = checkLoad;
+
+        office.onerror = errorHandler;
+        left.onerror = errorHandler;
+        right.onerror = errorHandler;
+
+        function draw() {
+            if(loadError) {
+                ctx.fillStyle = "#ff0000";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "white";
+                ctx.font = "16px monospace";
+                ctx.fillText("ОШИБКА: не загрузились картинки", 50, 100);
+                ctx.fillText("Файлы должны лежать рядом с index.html:", 50, 140);
+                ctx.fillText("office.jpg , left.jpg , right.jpg", 50, 180);
+                return;
+            }
+            if(imagesLoaded < 3) {
+                ctx.fillStyle = "#111";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#aaa";
+                ctx.font = "14px monospace";
+                ctx.fillText("Загрузка...", 20, 50);
+                return;
+            }
+            let img = office;
+            if(view === "left") img = left;
+            if(view === "right") img = right;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+
+        function turnLeft() {
+            if(view === "office") view = "left";
+            else if(view === "right") view = "office";
+            draw();
+        }
+
+        function turnRight() {
+            if(view === "office") view = "right";
+            else if(view === "left") view = "office";
+            draw();
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            if(x < canvas.width / 2) turnLeft();
+            else turnRight();
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+            if(x < canvas.width / 2) turnLeft();
+            else turnRight();
+        });
+    })();
+</script>
+</body>
+</html>
