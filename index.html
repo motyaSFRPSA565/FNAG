@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Office</title>
+    <title>FNAG | Office</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +22,6 @@
             width: 100%;
             height: 100%;
             display: block;
-            object-fit: contain;
             background: black;
         }
     </style>
@@ -35,6 +34,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // размер холста под окно
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -43,70 +43,85 @@
         window.addEventListener('resize', resize);
         resize();
 
-        const office = new Image();
-        const left = new Image();
-        const right = new Image();
+        // картинки
+        const images = {
+            office: new Image(),
+            left: new Image(),
+            right: new Image()
+        };
 
-        office.src = "office.jpg";
-        left.src = "left.jpg";
-        right.src = "right.jpg";
+        images.office.src = "office.jpg";
+        images.left.src = "left.jpg";
+        images.right.src = "right.jpg";
 
-        let view = "office";
-        let imagesLoaded = 0;
+        let currentView = "office"; // office, left, right
+        let loadedCount = 0;
         let loadError = false;
+        let errorMessage = "";
 
         function checkLoad() {
-            imagesLoaded++;
-            if(imagesLoaded === 3) draw();
+            loadedCount++;
+            if(loadedCount === 3) draw();
         }
 
-        function errorHandler() {
+        function handleError(imgName) {
             loadError = true;
+            errorMessage = `Не загрузилось: ${imgName}.jpg`;
             draw();
         }
 
-        office.onload = checkLoad;
-        left.onload = checkLoad;
-        right.onload = checkLoad;
+        images.office.onload = checkLoad;
+        images.left.onload = checkLoad;
+        images.right.onload = checkLoad;
 
-        office.onerror = errorHandler;
-        left.onerror = errorHandler;
-        right.onerror = errorHandler;
+        images.office.onerror = () => handleError("office");
+        images.left.onerror = () => handleError("left");
+        images.right.onerror = () => handleError("right");
 
         function draw() {
+            // Ошибка загрузки
             if(loadError) {
-                ctx.fillStyle = "#ff0000";
+                ctx.fillStyle = "#111";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "red";
+                ctx.font = "18px monospace";
+                ctx.fillText("ОШИБКА", 50, 100);
                 ctx.fillStyle = "white";
-                ctx.font = "16px monospace";
-                ctx.fillText("ОШИБКА: не загрузились картинки", 50, 100);
-                ctx.fillText("Файлы должны лежать рядом с index.html:", 50, 140);
-                ctx.fillText("office.jpg , left.jpg , right.jpg", 50, 180);
+                ctx.font = "14px monospace";
+                ctx.fillText(errorMessage, 50, 150);
+                ctx.fillText("Файлы должны быть в одной папке с index.html", 50, 200);
+                ctx.fillText("Имена: office.jpg , left.jpg , right.jpg", 50, 250);
                 return;
             }
-            if(imagesLoaded < 3) {
+
+            // Загрузка
+            if(loadedCount < 3) {
                 ctx.fillStyle = "#111";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#aaa";
-                ctx.font = "14px monospace";
-                ctx.fillText("Загрузка...", 20, 50);
+                ctx.font = "16px monospace";
+                ctx.fillText("Загрузка...", 30, 80);
                 return;
             }
-            let img = office;
-            if(view === "left") img = left;
-            if(view === "right") img = right;
+
+            // Нормальный режим: рисуем картинку
+            let img = images.office;
+            if(currentView === "left") img = images.left;
+            if(currentView === "right") img = images.right;
+            
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         }
 
+        // управление
         function turnLeft() {
-            if(view === "office") view = "left";
-            else if(view === "right") view = "office";
+            if(currentView === "office") currentView = "left";
+            else if(currentView === "right") currentView = "office";
             draw();
         }
 
         function turnRight() {
-            if(view === "office") view = "right";
-            else if(view === "left") view = "office";
+            if(currentView === "office") currentView = "right";
+            else if(currentView === "left") currentView = "office";
             draw();
         }
 
